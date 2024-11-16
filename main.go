@@ -78,5 +78,16 @@ func printTmpl() {
 	}
 	str := string(bytes)
 
+	cursorAt := ""
+	if strings.HasPrefix(str, "cursor@") {
+		ss := strings.SplitN(str, "\n", 2)
+		cursorAt = ss[0][7:]
+		str = ss[1]
+	}
+
 	fmt.Printf("%s", str)
+
+	if cursorAt != "" {
+		fmt.Fprintln(os.Stderr, fmt.Sprintf("%s", cursorAt))
+	}
 }
