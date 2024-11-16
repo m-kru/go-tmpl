@@ -85,17 +85,29 @@ func printTmpl() {
 		log.Fatalf("can't read files in %s: %v", dir, err)
 	}
 
-	fileName := ""
+	fileNames := []string{}
+	fileCount := 0
 	for _, e := range entries {
 		if strings.Contains(e.Name(), filePattern) {
-			fileName = e.Name()
-			break
+			fileNames = append(fileNames, e.Name())
+			fileCount++
 		}
 	}
 
-	if fileName == "" {
+	if fileCount == 0 {
 		log.Fatalf("file matching pattern '%s' not found in directory %s", filePattern, dir)
+	} else if fileCount > 1 {
+		files := ""
+		for i, f := range fileNames {
+			files += fmt.Sprintf("'%s'", f)
+			if i < len(fileNames)-1 {
+				files += ", "
+			}
+		}
+		log.Fatalf("%d files match pattern '%s': %s", fileCount, filePattern, files)
 	}
+
+	fileName := fileNames[0]
 
 	filePath := path.Join(dir, fileName)
 	bytes, err := os.ReadFile(filePath)
