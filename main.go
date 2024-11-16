@@ -6,11 +6,13 @@ import (
 	"os"
 	"path"
 	"strings"
+	"text/template"
 )
 
 var tmplDir string
 var filePattern string
 var dirNodes []string
+var tmplData map[string]string
 
 func main() {
 	log.SetFlags(0)
@@ -21,17 +23,41 @@ func main() {
 		log.Fatalf("TMPL_DIR environment variable not set")
 	}
 
-	args := os.Args[1:]
-	if len(args) == 0 {
+	if len(os.Args) == 1 {
 		listDir(tmplDir, 0)
 		os.Exit(0)
-	} else if len(args) > 1 {
-		dirNodes = args[0 : len(args)-1]
 	}
 
-	filePattern = args[len(args)-1]
+	tmplData = make(map[string]string, 32)
 
+	parseArgs()
 	printTmpl()
+}
+
+func parseArgs() {
+	inData := false
+	args := os.Args[1:]
+
+	for _, arg := range args {
+		if !inData && arg == "--" {
+			inData = true
+			continue
+		}
+
+		if !inData {
+			dirNodes = append(dirNodes, arg)
+			continue
+		}
+
+		ss := strings.Split(arg, "=")
+		if len(ss) == 1 {
+			log.Fatalf("missing '=' in '%s' value assignment", arg)
+		}
+		tmplData[ss[0]] = ss[1]
+	}
+
+	filePattern = dirNodes[len(dirNodes)-1]
+	dirNodes = dirNodes[0 : len(dirNodes)-1]
 }
 
 func listDir(dir string, lvl int) {
@@ -85,7 +111,19 @@ func printTmpl() {
 		str = ss[1]
 	}
 
-	fmt.Printf("%s", str)
+	tmpl := template.New("tmpl")
+	tmpl, err = tmpl.Parse(str)
+	if err != nil {
+		log.Fatalf("can't parse template: %v", err)
+	}
+
+	b := strings.Builder{}
+	err = tmpl.Execute(&b, &tmplData)
+	if err != nil {
+		log.Fatalf("can't execute template: %v", err)
+	}
+
+	fmt.Printf("%s", b.String())
 
 	if cursorAt != "" {
 		fmt.Fprintln(os.Stderr, fmt.Sprintf("%s", cursorAt))
