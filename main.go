@@ -1,5 +1,13 @@
 package main
 
+import (
+	"log"
+	"os"
+)
+
 func main() {
-	println("Hello wrold!")
+	tmplDir := os.Getenv("TMPL_DIR")
+	if tmplDir == "" {
+		log.Fatalf("TMPL_DIR environment variable not set")
+	}
 }
