@@ -14,6 +14,7 @@ var dirNodes []string
 
 func main() {
 	log.SetFlags(0)
+	log.SetPrefix("error: ")
 
 	tmplDir = os.Getenv("TMPL_DIR")
 	if tmplDir == "" {
