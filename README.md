@@ -1,4 +1,4 @@
-**tmpl** is a simple text template emitter.
+**tmpl** is a simple stdout text template emitter.
 Templates are regular text files stored in the file system.
 `tmpl` supports annotations in templates and uses the go `"text/template"` package logic to execute templates.
 To get more information on how annotations work, check the documentation of `"text/template",` for example
