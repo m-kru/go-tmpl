@@ -1,4 +1,4 @@
-**tmpl** is a simple stdout text template emitter.
+**tmpl** is a simple `stdout` text template emitter.
 Templates are regular text files stored in the file system.
 `tmpl` supports annotations in templates and uses the go `"text/template"` package logic to execute templates.
 To get more information on how annotations work, check the documentation of `"text/template",` for example:
@@ -39,7 +39,7 @@ The content of the directory can look as follows:
     └── tb.vhd
 ```
 
-To print any template to the stdout the user simply calls `tmpl` program with arguments being template path subdirectories and template file name.
+To print any template to the `stdout` the user simply calls `tmpl` program with arguments being template path subdirectories and template file name.
 For example, to print `absent-mail.txt` user calls:
 ```
 tmpl absent-mail.txt
@@ -65,8 +65,8 @@ If the provided template file pattern is ambiguous, `tmpl` reports an error.
 The pattern-matching rule doesn't apply to subdirectory names.
 They must be provided by the user exactly as they are.
 
-Template file names must not start with the '.' character.
-File names starting wit the '.' character are reserved for stderr content.
+Template file names must not start with the `'.'` character.
+File names starting wit the `'.'` character are reserved for `stderr` content.
 
 ## Annotations
 
@@ -99,9 +99,9 @@ Good luck, Tom!
 
 ## Integration with other programs
 
-If you want to integrate `tmpl` with other programs, for example, with text editors, `tmpl` is capable of printing custom text to stderr.
-The text for the stderr must be placed in a file with the same base name as the template but must start with the '.' character.
-Moreover, the file with stderr content must end with a custom extension.
+If you want to integrate `tmpl` with other programs, for example, with text editors, `tmpl` is capable of printing custom text to `stderr`.
+The text for the `stderr` must be placed in a file with the same base name as the template but must start with the `'.'` character.
+Moreover, the file with `stderr` content must end with a custom extension.
 
 ### Example
 
@@ -111,18 +111,18 @@ for () {
 }
 ```
 The [enix](https://github.com/m-kru/enix) editor can set the cursor in an arbitrary place after inserting the template.
-To do so, it must be provided with the following commands via stderr:
+To do so, it must be provided with the following commands via `stderr`:
 ```
 enix:sel-switch-cursor
 enix:5 right
 ```
 These commands are placed in the `.for.enix` file in the same directory as the `for.c` file.
 
-To print extra content to the stderr, not only template to the stdout, `tmpl` must be called with an additional argument.
-This argument is the extension of the file with stderr content.
-It must be placed as the first argument for `tmpl` and must be prepended with the '-' character.
+To print extra content to the `stderr`, not only template to the `stdout`, `tmpl` must be called with an additional argument.
+This argument is the extension of the file with `stderr` content.
+It must be placed as the first argument for `tmpl` and must be prepended with the `'-'` character.
 
-In the above example, to print template content to the stdout and extra editor control content to the stderr, the user must run:
+In the above example, to print template content to the `stdout` and extra editor control content to the `stderr`, the user must run:
 ```
 tmpl -enix c for
 ```
