@@ -1,13 +1,13 @@
 **tmpl** is a simple stdout text template emitter.
 Templates are regular text files stored in the file system.
 `tmpl` supports annotations in templates and uses the go `"text/template"` package logic to execute templates.
-To get more information on how annotations work, check the documentation of `"text/template",` for example
-
-`tmpl` has no external dependencies, it utilizes only go standard library.
+To get more information on how annotations work, check the documentation of `"text/template",` for example:
 
 ```
 go doc template
 ```
+
+`tmpl` has no external dependencies, it utilizes only go standard library.
 
 # How it works
 
@@ -94,40 +94,35 @@ Dear Tom,
 Good luck, Tom!
 ```
 
-## Setting cursor position
+## Integration with other programs
 
-`tmpl` supports settings cursor position.
-This feature might be useful if the user would like to call `tmpl` from within a text editor.
-To specify cursor position, add the following line at the beginning of a template file.
+If you want to integrate `tmpl` with other programs, for example, with text editors, `tmpl` is capable of printing custom text to stderr.
+The text for the stderr must be placed in a file with the same base name as the template but must start with the '.'.
+Moreover, the file with stderr content must end with a custom extension.
+
+### Example
+
+Let's assume there is a file named `for.c` with the following simple for-loop template:
 ```
-cursor@<line>:<column>
+for () {
+}
 ```
-The cursor position line is filtered out and not printed to the stdout.
-Information about line number and column is redirected to the stderr.
-However, the `cursor@` prefix is removed.
-It is easy to parse cursor position information in the stderr stream, as except from the cursor position, only error messages are printed to the stderr.
-However, error messages always start with the `error:` prefix.
-For example, let's consider the following template:
+The [enix](https://github.com/m-kru/enix) editor can set the cursor in an arbitrary place after inserting the template.
+To do so, it must be provided with the following commands via stderr:
 ```
-cursor@2:9
-\begin{itemize}
-  \item
-\end{itemize}
+enix:sel-switch-cursor
+enix:5 right
 ```
-The first line informs that the cursor should be placed in line number 2, column number 9.
-The output from the:
+These commands are placed in the `.for.enix` file in the same directory as the `for.c` file.
+
+To print extra content to the stderr, not only template to the stdout, `tmpl` must be called with an additional argument.
+This argument is the extension of the file with stderr content.
+It must be placed as the first argument for `tmpl` and must be prepended with the '-' character.
+
+In the above example, to print template content to the stdout and extra editor control content to the stderr, the user must run:
 ```
-tmpl tex item
+tmpl -enix c for
 ```
-looks as follows:
-```
-\begin{itemize}
-  \item
-\end{itemize}
-2:9 # <- This line is printed to the stderr, without this comment.
-```
-The cursor setting feature, of course, requires support from the editor.
-I am open to modifying this feature if you know how to handle it better.
 
 # Installation
 
