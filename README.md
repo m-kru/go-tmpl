@@ -65,6 +65,9 @@ If the provided template file pattern is ambiguous, `tmpl` reports an error.
 The pattern-matching rule doesn't apply to subdirectory names.
 They must be provided by the user exactly as they are.
 
+Template file names must not start with the '.' character.
+File names starting wit the '.' character are reserved for stderr content.
+
 ## Annotations
 
 `tmpl` supports annotations in templates and uses the go `"text/template"` package logic to execute templates.
@@ -97,7 +100,7 @@ Good luck, Tom!
 ## Integration with other programs
 
 If you want to integrate `tmpl` with other programs, for example, with text editors, `tmpl` is capable of printing custom text to stderr.
-The text for the stderr must be placed in a file with the same base name as the template but must start with the '.'.
+The text for the stderr must be placed in a file with the same base name as the template but must start with the '.' character.
 Moreover, the file with stderr content must end with a custom extension.
 
 ### Example
