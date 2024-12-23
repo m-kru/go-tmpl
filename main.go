@@ -13,6 +13,7 @@ var tmplDir string
 var filePattern string
 var dirNodes []string
 var tmplData map[string]string
+var stderrExtension string
 
 func main() {
 	log.SetFlags(0)
@@ -38,7 +39,12 @@ func parseArgs() {
 	inData := false
 	args := os.Args[1:]
 
-	for _, arg := range args {
+	for i, arg := range args {
+		if i == 0 && arg[0] == '-' {
+			stderrExtension = arg[1:]
+			continue
+		}
+
 		if !inData && arg == "--" {
 			inData = true
 			continue
@@ -88,7 +94,7 @@ func printTmpl() {
 	fileNames := []string{}
 	fileCount := 0
 	for _, e := range entries {
-		if strings.Contains(e.Name(), filePattern) {
+		if strings.Contains(e.Name(), filePattern) && e.Name()[0] != '.' {
 			fileNames = append(fileNames, e.Name())
 			fileCount++
 		}
@@ -116,13 +122,6 @@ func printTmpl() {
 	}
 	str := string(bytes)
 
-	cursorAt := ""
-	if strings.HasPrefix(str, "cursor@") {
-		ss := strings.SplitN(str, "\n", 2)
-		cursorAt = ss[0][7:]
-		str = ss[1]
-	}
-
 	tmpl := template.New("tmpl")
 	tmpl, err = tmpl.Parse(str)
 	if err != nil {
@@ -137,7 +136,18 @@ func printTmpl() {
 
 	fmt.Printf("%s", b.String())
 
-	if cursorAt != "" {
-		fmt.Fprintln(os.Stderr, fmt.Sprintf("%s", cursorAt))
+	if stderrExtension == "" {
+		return
 	}
+
+	stderrFileName := "." + strings.Split(fileName, ".")[0] + "." + stderrExtension
+	stderrFilePath := path.Join(dir, stderrFileName)
+	bytes, err = os.ReadFile(stderrFilePath)
+	if os.IsNotExist(err) {
+		return
+	} else if err != nil {
+		log.Fatalf("can't open stderr file template: %v", err)
+	}
+
+	fmt.Fprintf(os.Stderr, string(bytes))
 }
